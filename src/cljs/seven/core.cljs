@@ -4,6 +4,7 @@
    [reagent.dom :as rdom]
    [reagent.session :as session]
    [seven.timer :as timer]
+   [seven.cells :as cells]
    [reitit.frontend :as reitit]
    [clerk.core :as clerk]
    [accountant.core :as accountant]))
@@ -18,7 +19,8 @@
      ["" :items]
      ["/:item-id" :item]]
     ["/about" :about]
-    ["/timer" :timer]]))
+    ["/timer" :timer]
+    ["/cells" :cells]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -70,6 +72,7 @@
     :index #'home-page
     :about #'about-page
     :timer #'timer/root
+    :cells #'cells/root
     :items #'items-page
     :item #'item-page))
 
@@ -84,6 +87,7 @@
        [:header
         [:p [:a {:href (path-for :index)} "Home"] " | "
          [:a {:href (path-for :about)} "About seven"] " | "
+         [:a {:href (path-for :cells)} "Cells"] " | "
          [:a {:href (path-for :timer)} "Timer"]]]
        [page]
        [:footer
