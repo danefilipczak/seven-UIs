@@ -2,9 +2,12 @@
   (:require [reagent.core :as r]))
 
 (defn persist-state [state xfn]
-  (let [current-state (get (:states @state) (- (:cursor @state) 1) [])]
-   (swap! state update :states assoc (:cursor @state) ;; todo don't just assoc, also blow out all later elements in the vec
-          (xfn current-state))
+  (let [{:keys [cursor states]} @state
+        current-state (get states (- cursor 1) [])]
+   (swap! state update :states #(assoc
+                                  (->> % (take cursor) vec)
+                                  cursor
+                                  (xfn current-state)))
    (swap! state update :cursor inc)))
 
 (defn add-circle [e state]
@@ -27,7 +30,7 @@
     (fn []
       (let [{:keys [cursor states]} @state
             current-state (get states (- cursor 1) [])]
-        [:<>
+        [:div.circles
          [:div
           [:button
            {:disabled (or (< cursor 1) @buffer)
@@ -55,10 +58,7 @@
                         (/ (second @buffer) 2)
                         (/ diameter 2))
                    :on-click #(do (-> % .stopPropagation)
-                                  (reset! buffer [i diameter]))
-                   ;:on-mouse-enter #(reset! selected i) ;;todo do this with css instead
-                   ;:on-mouse-leave #(reset! selected nil)
-                   }]))
+                                  (reset! buffer [i diameter]))}]))
               current-state))]
          [:div
           (when @buffer

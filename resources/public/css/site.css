@@ -32,3 +32,19 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.invalid {
+  background-color: red;
+}
+
+.flights input {
+  display: block;
+}
+
+.circles circle:hover {
+  fill: gray;
+}
+
+.circles svg {
+  border-style: solid;
+}

@@ -5,6 +5,7 @@
    [reagent.session :as session]
    [seven.timer :as timer]
    [seven.cells :as cells]
+   [seven.flights :as flights]
    [seven.circles :as circles]
    [reitit.frontend :as reitit]
    [clerk.core :as clerk]
@@ -21,6 +22,7 @@
      ["/:item-id" :item]]
     ["/about" :about]
     ["/timer" :timer]
+    ["/flights" :flights]
     ["/cells" :cells]
     ["/circles" :circles]]))
 
@@ -75,6 +77,7 @@
     :about #'about-page
     :timer #'timer/root
     :cells #'cells/root
+    :flights #'flights/root
     :circles #'circles/root
     :items #'items-page
     :item #'item-page))
@@ -91,6 +94,7 @@
         [:p [:a {:href (path-for :index)} "Home"] " | "
          [:a {:href (path-for :about)} "About seven"] " | "
          [:a {:href (path-for :cells)} "Cells"] " | "
+         [:a {:href (path-for :flights)} "Flights"] " | "
          [:a {:href (path-for :circles)} "Circles"] " | "
          [:a {:href (path-for :timer)} "Timer"]]]
        [page]
