@@ -41,11 +41,10 @@
             :disabled (or
                         (= (count states) 0)
                         (= cursor (count states))
-                        @buffer)
-            }
+                        @buffer)}
            "redo"]]
          [:svg
-          {:on-click #(add-circle % state)}
+          {:on-click #(when-not @buffer (add-circle % state))}
           (doall
             (map-indexed
               (fn [i {:keys [location diameter]}]

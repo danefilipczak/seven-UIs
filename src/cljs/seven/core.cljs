@@ -7,6 +7,7 @@
    [seven.cells :as cells]
    [seven.flights :as flights]
    [seven.circles :as circles]
+   [seven.counter :as counter]
    [reitit.frontend :as reitit]
    [clerk.core :as clerk]
    [accountant.core :as accountant]))
@@ -23,6 +24,7 @@
     ["/about" :about]
     ["/timer" :timer]
     ["/flights" :flights]
+    ["/counter" :counter]
     ["/cells" :cells]
     ["/circles" :circles]]))
 
@@ -77,6 +79,7 @@
     :about #'about-page
     :timer #'timer/root
     :cells #'cells/root
+    :counter #'counter/root
     :flights #'flights/root
     :circles #'circles/root
     :items #'items-page
@@ -94,6 +97,7 @@
         [:p [:a {:href (path-for :index)} "Home"] " | "
          [:a {:href (path-for :about)} "About seven"] " | "
          [:a {:href (path-for :cells)} "Cells"] " | "
+         [:a {:href (path-for :counter)} "Counter"] " | "
          [:a {:href (path-for :flights)} "Flights"] " | "
          [:a {:href (path-for :circles)} "Circles"] " | "
          [:a {:href (path-for :timer)} "Timer"]]]
