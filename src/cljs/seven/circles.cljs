@@ -1,42 +1,80 @@
 (ns seven.circles
   (:require [reagent.core :as r]))
 
+(defn persist-state [state xfn]
+  (let [current-state (get (:states @state) (- (:cursor @state) 1) [])]
+   (swap! state update :states assoc (:cursor @state) ;; todo don't just assoc, also blow out all later elements in the vec
+          (xfn current-state))
+   (swap! state update :cursor inc)))
+
+(defn add-circle [e state]
+  (let [dim (-> e .-currentTarget .getBoundingClientRect)
+        location [(- (.-clientX e) (.-left dim))
+                  (- (.-clientY e) (.-top dim))]]
+    (persist-state
+      state
+      #(conj % {:diameter 20
+                :location location}))))
+
+(defn resize-circle [state selected temp-diameter]
+  (persist-state
+    state
+    #(assoc-in % [selected :diameter] temp-diameter)))
+
 (defn root []
-  "I am circles"
   (let [state (r/atom {:cursor 0 :states []})
-        selected (r/atom nil)]
+        buffer (r/atom nil)]
     (fn []
       (let [{:keys [cursor states]} @state
             current-state (get states (- cursor 1) [])]
         [:<>
-         [:button
-          {:disabled (< cursor 1)
-           :on-click #(swap! state update :cursor dec)}
-          "undo"]
-         [:button
-          {:on-click #(swap! state update :cursor inc)
-           :disabled (or
-                       (= (count states) 0)
-                       (= cursor (count states))) ;todo is this right
-                       }
-          "redo"]
+         [:div
+          [:button
+           {:disabled (or (< cursor 1) @buffer)
+            :on-click #(swap! state update :cursor dec)}
+           "undo"]
+          [:button
+           {:on-click #(swap! state update :cursor inc)
+            :disabled (or
+                        (= (count states) 0)
+                        (= cursor (count states))
+                        @buffer)
+            }
+           "redo"]]
          [:svg
-          {:on-click #(let [dim (-> % .-currentTarget .getBoundingClientRect)]
-                        (swap! state update :states assoc cursor ;; todo don't just assoc, also blow out all later elements in the vec
-                               (conj current-state
-                                     {:radius 20
-                                      :location
-                                      [(- (.-clientX %) (.-left dim))
-                                       (- (.-clientY %) (.-top dim))]}))
-                        (swap! state update :cursor inc))}
+          {:on-click #(add-circle % state)}
           (doall
             (map-indexed
-              (fn [i {:keys [location radius]}]
-                [:circle
-                 {:cx (first location)
-                  :cy (second location)
-                  :fill (if (= @selected i) "gray" "black")
-                  :r radius
-                  :on-mouse-enter #(reset! selected i)
-                  :on-mouse-leave #(reset! selected nil)}])
-              current-state))]]))))
+              (fn [i {:keys [location diameter]}]
+                (let [selected? (= (first @buffer) i)]
+                 [:circle
+                  {:cx (first location)
+                   :cy (second location)
+                   :fill (if selected? "gray" "black")
+                   :r (if selected?
+                        (/ (second @buffer) 2)
+                        (/ diameter 2))
+                   :on-click #(do (-> % .stopPropagation)
+                                  (reset! buffer [i diameter]))
+                   ;:on-mouse-enter #(reset! selected i) ;;todo do this with css instead
+                   ;:on-mouse-leave #(reset! selected nil)
+                   }]))
+              current-state))]
+         [:div
+          (when @buffer
+            [:<>
+             [:input
+              {:type :range
+               :min 5
+               :max 100
+               :value (second @buffer)
+               :on-change #(swap! buffer assoc 1 (-> % .-target .-value))}]
+             [:button
+              {:on-click (fn []
+                           (reset! buffer nil))}
+              "cancel"]
+             [:button
+              {:on-click (fn []
+                           (apply resize-circle state @buffer)
+                           (reset! buffer nil))}
+              "save"]])]]))))

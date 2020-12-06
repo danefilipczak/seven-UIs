@@ -23,7 +23,7 @@
 (defn tick [state]
   (let [{:keys [cursor duration]} @state]
     (when (< cursor duration)
-      (swap! state update :cursor (partial + 0.1)))))
+      (swap! state update :cursor + 0.1))))
 
 (defn root []
   (let [state (r/atom {:duration 100

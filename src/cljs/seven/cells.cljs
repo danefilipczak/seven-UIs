@@ -5,6 +5,8 @@
     [reagent.core :as r])
   )
 
+(def ENTER 13)
+
 (defn eval-program [program]
   (eval (empty-state)
         ;'(+ 1 3)
@@ -40,7 +42,7 @@
       obsolete-dependencies)
 
     (swap! state assoc-in
-           (conj cell :dependencies) dependencies)))
+           (conj cell :dependencies) dependencies))) ;; todo do this with a program buffer instead of storing the dependencies
 
 (defn root* [state]
   [:table
@@ -56,7 +58,7 @@
                           {:type :text
                            :value (:program cell)
                            :on-key-down (fn [e]
-                                          (when (= 13 (-> e .-keyCode))
+                                          (when (= ENTER (-> e .-keyCode))
                                             (evaluate! [x y] state)))
                            :on-change (fn [e]
                                         (let [program (-> e .-target .-value)]
