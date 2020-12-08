@@ -48,3 +48,24 @@ a:hover {
 .circles svg {
   border-style: solid;
 }
+
+.crud .active {
+  background-color: #75c9ff;
+}
+
+.crud .entry {
+  cursor: pointer;
+}
+
+.crud .entryList {
+  border-style: solid;
+  width: 300px;
+  height: 100px;
+  overflow: scroll;
+}
+
+.cells {
+  overflow: scroll;
+  border-style: solid;
+  width: 500px;
+}

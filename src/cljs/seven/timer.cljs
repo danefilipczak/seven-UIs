@@ -7,7 +7,8 @@
     [:<>
      [:progress {:value cursor
                  :max duration}]
-     [:div "elapsed time" cursor]
+     [:div "Elapsed Time: " (.round js/Math cursor)]
+     [:div "Timer Duration: " (.round js/Math duration)]
      [:input {:type :range
               :min 1
               :max 100

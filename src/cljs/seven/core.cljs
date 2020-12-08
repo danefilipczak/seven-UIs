@@ -4,10 +4,12 @@
    [reagent.dom :as rdom]
    [reagent.session :as session]
    [seven.timer :as timer]
+   [seven.temperatures :as temperatures]
    [seven.cells :as cells]
    [seven.flights :as flights]
    [seven.circles :as circles]
    [seven.counter :as counter]
+   [seven.crud :as crud]
    [reitit.frontend :as reitit]
    [clerk.core :as clerk]
    [accountant.core :as accountant]))
@@ -21,7 +23,8 @@
     ["/items"
      ["" :items]
      ["/:item-id" :item]]
-    ["/about" :about]
+    ["/crud" :crud]
+    ["/temperatures" :temperatures]
     ["/timer" :timer]
     ["/flights" :flights]
     ["/counter" :counter]
@@ -64,22 +67,17 @@
        [:h1 (str "Item " item " of seven")]
        [:p [:a {:href (path-for :items)} "Back to the list of items"]]])))
 
-
-(defn about-page []
-  (fn [] [:span.main
-          [:h1 "About seven"]]))
-
-
 ;; -------------------------
 ;; Translate routes -> page components
 
 (defn page-for [route]
   (case route
     :index #'home-page
-    :about #'about-page
     :timer #'timer/root
     :cells #'cells/root
+    :crud #'crud/root
     :counter #'counter/root
+    :temperatures #'temperatures/root
     :flights #'flights/root
     :circles #'circles/root
     :items #'items-page
@@ -95,10 +93,11 @@
       [:div
        [:header
         [:p [:a {:href (path-for :index)} "Home"] " | "
-         [:a {:href (path-for :about)} "About seven"] " | "
          [:a {:href (path-for :cells)} "Cells"] " | "
+         [:a {:href (path-for :crud)} "CRUD"] " | "
          [:a {:href (path-for :counter)} "Counter"] " | "
          [:a {:href (path-for :flights)} "Flights"] " | "
+         [:a {:href (path-for :temperatures)} "Temperature Converter"] " | "
          [:a {:href (path-for :circles)} "Circles"] " | "
          [:a {:href (path-for :timer)} "Timer"]]]
        [page]
