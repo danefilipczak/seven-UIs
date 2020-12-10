@@ -2,48 +2,52 @@
   (:require [reagent.core :as r]))
 
 (defn to-internal [format]
-  (case format
-    :fahrenheit identity
-    :celsius #(if (re-matches #"\d*" (str %))
-               (+ 32 (* % (/ 9 5)))
-               %)))
-
-
-(let [mem (atom nil)]
-  (defn only-pos [i]
-    (when (pos? i)
-      (reset! mem i))
-    @mem))
+  (fn [input]
+    (when (re-matches #"^\-?\d(\d|\.)*" (str input))
+      (case format
+        :fahrenheit input
+        :celsius (+ 32 (* input (/ 9 5)))))))
 
 (comment
-  ;; lol nothing about this works at all. you can't have a format agnostic inner value and still be able to read differently
-  ;; just use explicit functions and be on your merry way
-  (re-matches #"\d*" 10)
-  (only-pos 9))
+  (re-matches #"\d*" "-17.777777777777")
+  ((to-internal :celsius) "-")
 
-(let [mem (atom nil)
-      only-nums (fn [fun val]
-                  #_(.log js/console (re-matches #"\d*" (str val)))
-                  (when (re-matches #"\d*" (str val))
-                    (reset! mem val))
-                  (fun @mem))]
-  (defn from-internal [format]
-    (case format
-      :fahrenheit (partial only-nums identity)
-      :celsius (partial only-nums #(* (- % 32) (/ 5 9))))))
+  (re-matches #"^\-?\d(\d|\.)*" "")
 
+  )
+
+(defn from-internal [format]
+  (case format
+    :fahrenheit identity
+    :celsius #(->>
+                (* (- % 32) (/ 5 9))
+                (.round js/Math))))
 
 ;C = (F - 32) * (5/9) and the dual direction is F = C * (9/5) + 32.
 
 (defn root []
-  (let [temp (r/atom 0)]
+  (let [internal (r/atom 0)
+        c-buffer (r/atom nil)
+        f-buffer (r/atom nil)]
     (fn []
-      [:div
-       [:input
-        {:type :text
-         :value ((from-internal :celsius) @temp)
-         :on-change #(reset! temp ((to-internal :celsius) (-> % .-target .-value)))}]
-       [:input
-        {:type :text
-         :value ((from-internal :fahrenheit) @temp)
-         :on-change #(reset! temp ((to-internal :fahrenheit) (-> % .-target .-value)))}]])))
+      [:div.temperature
+       [:div
+        [:label "celsius:"]
+        [:input
+         {:type :text
+          :value (or @c-buffer ((from-internal :celsius) @internal))
+          :on-blur #(reset! c-buffer nil)
+          :on-change #(if-let [value ((to-internal :celsius) (-> % .-target .-value))]
+                        (do (reset! internal value)
+                            (reset! c-buffer nil))
+                        (reset! c-buffer (-> % .-target .-value)))}]]
+       [:div
+        [:label "fahrenheit:"]
+        [:input
+         {:type :text
+          :on-blur #(reset! f-buffer nil)
+          :value (or @f-buffer ((from-internal :fahrenheit) @internal))
+          :on-change #(if-let [value ((to-internal :fahrenheit) (-> % .-target .-value))]
+                        (do (reset! internal value)
+                            (reset! f-buffer nil))
+                        (reset! f-buffer (-> % .-target .-value)))}]]])))

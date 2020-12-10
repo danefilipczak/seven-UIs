@@ -37,8 +37,38 @@ a:hover {
   background-color: red;
 }
 
-.flights input {
+.flights input, .flights select, .flights button {
   display: block;
+  margin-top: 5px;
+  width: 100%
+}
+
+.flights {
+  width: 200px;
+}
+
+.circles {
+  position: relative;
+}
+
+.circles .resize {
+  border: solid 1px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.circles button {
+  width: 100px;
+  margin: 5px;
 }
 
 .circles circle:hover {
@@ -47,6 +77,23 @@ a:hover {
 
 .circles svg {
   border-style: solid;
+  width: 100%;
+  height: 500px;
+}
+
+.crud {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
+.crud input {
+  margin-left: 5px;
+}
+
+.crud button {
+  margin-left: 5px;
+  width:100px;
 }
 
 .crud .active {
@@ -67,5 +114,12 @@ a:hover {
 .cells {
   overflow: scroll;
   border-style: solid;
-  width: 500px;
+}
+
+.temperature input {
+  margin-left: 10px;
+}
+
+.counter button {
+  margin-left: 10px;
 }

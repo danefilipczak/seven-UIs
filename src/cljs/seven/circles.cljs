@@ -59,8 +59,8 @@
                    :on-click #(do (-> % .stopPropagation)
                                   (reset! buffer [i diameter]))}]))
               current-state))]
-         [:div
-          (when @buffer
+         (when @buffer
+           [:div.resize
             [:<>
              [:input
               {:type :range
@@ -76,4 +76,4 @@
               {:on-click (fn []
                            (apply resize-circle state @buffer)
                            (reset! buffer nil))}
-              "save"]])]]))))
+              "save"]]])]))))

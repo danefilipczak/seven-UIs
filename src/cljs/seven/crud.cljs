@@ -28,43 +28,49 @@
     (fn []
       (let [filtered-data (filter (partial has-prefix? @prefix) @data)]
         [:div.crud
-         [:input
-          {:type :text
-           :value @prefix
-           :on-change #(do
-                         (reset! buffer nil)
-                         (reset! prefix (-> % .-target .-value)))}]
-         [:div.entryList
-          (doall (for [{:keys [first last id] :as entry} filtered-data]
-                   [:div.entry
-                    {:key id
-                     :on-click #(reset! buffer entry)
-                     :class (when (= id (:id @buffer)) "active")}
-                    [:span (str last ", " first)]]))]
-         (let [{:keys [first last id]} @buffer]
-           [:<>
+         [:section
+          [:div
+           [:label "filter by last name:"]
+           [:input
+            {:type :text
+             :value @prefix
+             :on-change #(do
+                           (reset! buffer nil)
+                           (reset! prefix (-> % .-target .-value)))}]]
+          [:div.entryList
+           (doall (for [{:keys [first last id] :as entry} filtered-data]
+                    [:div.entry
+                     {:key id
+                      :on-click #(reset! buffer entry)
+                      :class (when (= id (:id @buffer)) "active")}
+                     [:span (str last ", " first)]]))]
+          [:div
+           [:button
+            {:disabled (not (and (:first @buffer) (:last @buffer)))
+             :on-click #(do (swap! data create! @buffer)
+                            (reset! buffer nil))}
+            "Create"]
+           [:button
+            {:disabled (not (:id @buffer))
+             :on-click #(do (swap! data update! @buffer)
+                            (reset! buffer nil))}
+            "Update"]
+           [:button
+            {:disabled (not (:id @buffer))
+             :on-click #(do (swap! data delete! @buffer)
+                            (reset! buffer nil))}
+            "Delete"]]]
+         (let [{:keys [first last]} @buffer]
+           [:section
             [:div
+             [:label "first name:"]
              [:input
               {:type :text
                :value first
-               :on-change #(swap! buffer assoc :first (-> % .-target .-value))}]
+               :on-change #(swap! buffer assoc :first (-> % .-target .-value))}]]
+            [:div
+             [:label "last name:"]
              [:input
               {:type :text
                :on-change #(swap! buffer assoc :last (-> % .-target .-value))
-               :value last}]]
-            [:div
-             [:button
-              {:disabled (not (and first last))
-               :on-click #(do (swap! data create! @buffer)
-                              (reset! buffer nil))}
-              "Create"]
-             [:button
-              {:disabled (not id)
-               :on-click #(do (swap! data update! @buffer)
-                              (reset! buffer nil))}
-              "Update"]
-             [:button
-              {:disabled (not id)
-               :on-click #(do (swap! data delete! @buffer)
-                              (reset! buffer nil))}
-              "Delete"]]])]))))
+               :value last}]]])]))))
